@@ -97,9 +97,29 @@ const startServer = async () => {
           break;
         }
 
-        case 'DELETE':
-          sendResponse(res, 501, 'application/json; charset=utf-8', JSON.stringify({ error: 'DELETE ще не реалізовано' }));
+        case 'DELETE': {
+          try {
+            await fs.unlink(cacheFilePath);
+            sendResponse(
+              res,
+              200,
+              'application/json; charset=utf-8',
+              JSON.stringify({ message: `Картинку для коду ${statusCode} видалено з кешу` })
+            );
+          } catch (unlinkErr) {
+            if (unlinkErr.code === 'ENOENT') {
+              sendResponse(
+                res,
+                404,
+                'application/json; charset=utf-8',
+                JSON.stringify({ error: `Картинку для коду ${statusCode} не знайдено в кеші` })
+              );
+            } else {
+              throw unlinkErr;
+            }
+          }
           break;
+        }
 
         default:
           sendResponse(
