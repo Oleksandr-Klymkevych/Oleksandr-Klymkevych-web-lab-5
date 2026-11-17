@@ -24,6 +24,14 @@ const sendResponse = (res, statusCode, contentType, body, extraHeaders = {}) => 
   res.end(body);
 };
 
+const readRequestBody = async (req) => {
+  const chunks = [];
+  for await (const chunk of req) {
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks);
+};
+
 const startServer = async () => {
   try {
     await fs.mkdir(options.cache, { recursive: true });
@@ -77,9 +85,17 @@ const startServer = async () => {
           break;
         }
 
-        case 'PUT':
-          sendResponse(res, 501, 'application/json; charset=utf-8', JSON.stringify({ error: 'PUT ще не реалізовано' }));
+        case 'PUT': {
+          const imageBuffer = await readRequestBody(req);
+          await fs.writeFile(cacheFilePath, imageBuffer);
+          sendResponse(
+            res,
+            201,
+            'application/json; charset=utf-8',
+            JSON.stringify({ message: `Картинку для коду ${statusCode} збережено в кеш` })
+          );
           break;
+        }
 
         case 'DELETE':
           sendResponse(res, 501, 'application/json; charset=utf-8', JSON.stringify({ error: 'DELETE ще не реалізовано' }));
