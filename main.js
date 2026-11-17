@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import http from 'http';
 import fs from 'fs/promises';
 import path from 'path';
+import crypto from 'crypto';
 import superagent from 'superagent';
 
 const program = new Command();
@@ -30,6 +31,17 @@ const readRequestBody = async (req) => {
     chunks.push(chunk);
   }
   return Buffer.concat(chunks);
+};
+
+const writeFileAtomic = async (filePath, buffer) => {
+  const tempPath = `${filePath}.${crypto.randomUUID()}.tmp`;
+  try {
+    await fs.writeFile(tempPath, buffer);
+    await fs.rename(tempPath, filePath);
+  } catch (err) {
+    await fs.unlink(tempPath).catch(() => {});
+    throw err;
+  }
 };
 
 const startServer = async () => {
@@ -71,7 +83,7 @@ const startServer = async () => {
             try {
               const response = await superagent.get(`https://http.cat/${statusCode}`);
               const imageBuffer = response.body;
-              await fs.writeFile(cacheFilePath, imageBuffer);
+              await writeFileAtomic(cacheFilePath, imageBuffer);
               sendResponse(res, 200, 'image/jpeg', imageBuffer, { 'X-Cache': 'MISS' });
             } catch (fetchErr) {
               sendResponse(
@@ -87,7 +99,17 @@ const startServer = async () => {
 
         case 'PUT': {
           const imageBuffer = await readRequestBody(req);
-          await fs.writeFile(cacheFilePath, imageBuffer);
+          if (imageBuffer.length === 0) {
+            sendResponse(
+              res,
+              400,
+              'application/json; charset=utf-8',
+              JSON.stringify({ error: 'Тіло PUT-запиту не може бути порожнім' })
+            );
+            return;
+          }
+
+          await writeFileAtomic(cacheFilePath, imageBuffer);
           sendResponse(
             res,
             201,
