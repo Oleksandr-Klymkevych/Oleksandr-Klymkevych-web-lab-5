@@ -1,0 +1,45 @@
+{
+	"id": "6afca51210c286d09c0e2bfc",
+	"name": "Caching Proxy Lab 5",
+	"timestamp": "2026-11-17T19:03:57.739Z",
+	"collection_id": "3AF60ab0df8ee7556DDb5Cbf",
+	"folder_id": 0,
+	"environment_id": "0",
+	"totalPass": 13,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2026-11-17T19:03:46.873Z",
+	"totalFail": 1,
+	"results": [],
+	"count": 1,
+	"totalTime": 0,
+	"collection": {
+		"requests": [
+			{
+				"id": "cBdE8CD5C92e97FeCCb734e5"
+			},
+			{
+				"id": "918D5122fF2cabBACB6c9bC6"
+			},
+			{
+				"id": "BDbf6eDc508cDCAc1846f5fD"
+			},
+			{
+				"id": "a7bA3a919105ffecbE9286Fd"
+			},
+			{
+				"id": "EaD49C63C6aF2f3d9ADaAAf9"
+			},
+			{
+				"id": "7F17fD836d6Dfdb1FEe0DFf0"
+			},
+			{
+				"id": "3054Eb4FEED88d74baE5F59F"
+			},
+			{
+				"id": "E8DEc7ECeDABdd1CD9058FB5"
+			}
+		]
+	}
+}
